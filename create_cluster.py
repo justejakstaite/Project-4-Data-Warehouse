@@ -1,5 +1,8 @@
 import boto3
 import configparser
+import json
+import logging
+
 
 config = configparser.ConfigParser()
 config.read_file(open('dwh.cfg'))
@@ -51,3 +54,34 @@ def create_resources():
                             )
 
     return ec2, s3, iam, redshift
+
+
+def create_iam_role(iam):
+
+    """ Create IAM role for Redshift cluster """
+
+    try:
+        dwh_role = iam.create_role(
+            Path='/',
+            RoleName=DWH_IAM_ROLE_NAME,
+            AssumeRolePolicyDocument=json.dumps({
+                'Statement': [{
+                    'Action': 'sts:AssumeRole',
+                    'Effect': 'Allow',
+                    'Principal': {'Service': 'redshift.amazonaws.com'}
+                }],
+                'Version': '2012-10-17'
+            })
+        )
+        iam.attach_role_policy(
+            RoleName=DWH_IAM_ROLE_NAME,
+            PolicyArn=S3_ARN_READ
+        )
+
+    except ClientError as e:
+        logging.warning(e)
+
+    role_arn = iam.get_role(RoleName=DWH_IAM_ROLE_NAME)['Role']['Arn']
+    logging.info('Role {} with arn {}'.format(DWH_IAM_ROLE_NAME, role_arn))
+
+    return role_arn
