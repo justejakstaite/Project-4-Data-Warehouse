@@ -42,12 +42,11 @@ $ pip install -r requirements.txt
 ## Instructions for executing scripts
 
 - Set variables in `dhw.cfg` file:
-[AWS]
-`KEY`: `AWS_ACCESS_KEY_ID`
-`SECRET`: `AWS_SECRET_ACCESS_KEY`
-
-[CLUSTER]
-`DB_PASSWORD`
+<br />  **[AWS]**
+<br />  KEY: AWS_ACCESS_KEY_ID
+<br />  SECRET: AWS_SECRET_ACCESS_KEY
+<br /> **[CLUSTER]**
+<br /> DB_PASSWORD
 
 - Establish an IAM role, set up a Redshift cluster, and arrange TCP connectivity.
 
@@ -56,10 +55,10 @@ $ python create_cluster.py
 ```
 
 - Finish filling in `dwh.cfg` with the outputs obtained from `create_cluster.py`.
-[CLUSTER]
-`HOST`
-[IAM_ROLE]
-`ARN`
+<br /> **[CLUSTER]**
+<br /> HOST
+<br /> **[IAM_ROLE]**
+<br /> ARN
 
 - Drop and recreate tables:
 
