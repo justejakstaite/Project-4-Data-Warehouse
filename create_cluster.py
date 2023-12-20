@@ -156,6 +156,7 @@ def open_tcp(ec2, vpc_id):
     except ClientError as e:
         logging.warning(e)
 
+
 def main(args):
 
     """ Main function """

@@ -17,7 +17,7 @@ time_table_drop = "DROP TABLE IF EXISTS time"
 
 # CREATE TABLES
 
-staging_events_table_create= ("""
+staging_events_table_create = ("""
     CREATE TABLE IF NOT EXISTS staging_events
     (
         artist          TEXT,
@@ -140,7 +140,7 @@ staging_songs_copy = ("""
     'staging_songs',
     config.get('S3', 'SONG_DATA'),
     config.get('IAM_ROLE', 'ARN'),
-    config('DWH', 'DWH_REGION')
+    config.get('DWH', 'DWH_REGION')
 )
 
 # FINAL TABLES
