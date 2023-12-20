@@ -3,6 +3,8 @@ import configparser
 import json
 import logging
 
+from botocore.exceptions import ClientError
+
 
 config = configparser.ConfigParser()
 config.read_file(open('dwh.cfg'))
@@ -85,3 +87,25 @@ def create_iam_role(iam):
     logging.info('Role {} with arn {}'.format(DWH_IAM_ROLE_NAME, role_arn))
 
     return role_arn
+
+
+def create_redshift_cluster(redshift, role_arn):
+
+    """ Create Redshift cluster """
+
+    try:
+        redshift.create_cluster(
+            ClusterType=DWH_CLUSTER_TYPE,
+            NodeType=DWH_NODE_TYPE,
+            NumberOfNodes=int(DWH_NUM_NODES),
+            DBName=DB_NAME,
+            ClusterIdentifier=DWH_CLUSTER_IDENTIFIER,
+            MasterUsername=DB_USER,
+            MasterUserPassword=DB_PASSWORD,
+            IamRoles=[role_arn],
+        )
+        logging.info('Creating cluster {}...'.format(DWH_CLUSTER_IDENTIFIER))
+
+    except ClientError as e:
+        logging.warning(e)
+
