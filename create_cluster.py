@@ -109,3 +109,28 @@ def create_redshift_cluster(redshift, role_arn):
     except ClientError as e:
         logging.warning(e)
 
+
+def delete_iam_role(iam):
+
+    """ Delete IAM role """
+
+    role_arn = iam.get_role(RoleName=DWH_IAM_ROLE_NAME)['Role']['Arn']
+    iam.detach_role_policy(RoleName=DWH_IAM_ROLE_NAME, PolicyArn=S3_ARN_READ)
+    iam.delete_role(RoleName=DWH_IAM_ROLE_NAME)
+    logging.info('Deleted role {} with {}'.format(DWH_IAM_ROLE_NAME, role_arn))
+
+
+def delete_redshift_cluster(redshift):
+
+    """ Delete Redshift cluster """
+
+    try:
+        redshift.delete_cluster(
+            ClusterIdentifier=DWH_CLUSTER_IDENTIFIER,
+            SkipFinalClusterSnapshot=True,
+        )
+        logging.info('Deleted cluster {}'.format(DWH_CLUSTER_IDENTIFIER))
+
+    except Exception as e:
+        logging.error(e)
+
