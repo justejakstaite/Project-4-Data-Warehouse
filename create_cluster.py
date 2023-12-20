@@ -1,7 +1,9 @@
+import argparse
 import boto3
 import configparser
 import json
 import logging
+import time
 
 from botocore.exceptions import ClientError
 
@@ -153,4 +155,45 @@ def open_tcp(ec2, vpc_id):
 
     except ClientError as e:
         logging.warning(e)
+
+def main(args):
+
+    """ Main function """
+
+    ec2, s3, iam, redshift = create_resources()
+
+    if args.delete:
+        delete_redshift_cluster(redshift)
+        delete_iam_role(iam)
+
+    else:
+        role_arn = create_iam_role(iam)
+        create_redshift_cluster(redshift, role_arn)
+
+        # Continuously check the status of the Redshift cluster after creation until it becomes available
+        time_step = 15
+        for _ in range(int(600/time_step)):
+            cluster = redshift.describe_clusters(ClusterIdentifier=DWH_CLUSTER_IDENTIFIER)['Clusters'][0]
+            if cluster['ClusterStatus'] == 'available':
+                break
+            logging.info('Cluster status is "{}". Retrying in {} seconds.'.format(cluster['ClusterStatus'], time_step))
+            time.sleep(time_step)
+
+        # Initiate a TCP connection once the cluster creation is successful
+        if cluster:
+            logging.info('Cluster created at {}'.format(cluster['Endpoint']))
+            open_tcp(ec2, cluster['VpcId'])
+        else:
+            logging.error('Could not connect to cluster')
+
+
+if __name__ == '__main__':
+
+    """ Set logging level and cli arguments """
+
+    logging.basicConfig(level=logging.INFO)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--delete', dest='delete', default=False, action='store_true')
+    args = parser.parse_args()
+    main(args)
 
