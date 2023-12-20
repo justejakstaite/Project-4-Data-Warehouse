@@ -134,3 +134,23 @@ def delete_redshift_cluster(redshift):
     except Exception as e:
         logging.error(e)
 
+
+def open_tcp(ec2, vpc_id):
+
+    """ Open TCP connection """
+
+    try:
+        vpc = ec2.Vpc(id=vpc_id)
+        default_sg = list(vpc.security_groups.all())[0]
+        default_sg.authorize_ingress(
+            GroupName=default_sg.group_name,
+            CidrIp='0.0.0.0/0',
+            IpProtocol='TCP',
+            FromPort=int(DB_PORT),
+            ToPort=int(DB_PORT),
+        )
+        logging.info('Allow TCP connection')
+
+    except ClientError as e:
+        logging.warning(e)
+
