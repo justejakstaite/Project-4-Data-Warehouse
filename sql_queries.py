@@ -126,10 +126,10 @@ staging_events_copy = ("""
     JSON {} region '{}';
 """).format(
     'staging_events',
-    config['S3']['LOG_DATA'],
-    config['IAM_ROLE']['ARN'],
-    config['S3']['LOG_JSONPATH'],
-    config['CLUSTER']['REGION']
+    config.get('S3', 'LOG_DATA'),
+    config.get('IAM_ROLE', 'ARN'),
+    config.get('S3', 'LOG_JSONPATH'),
+    config.get('DWH', 'DWH_REGION')
 )
 
 staging_songs_copy = ("""
@@ -138,9 +138,9 @@ staging_songs_copy = ("""
     JSON 'auto' region '{}';
 """).format(
     'staging_songs',
-    config['S3']['SONG_DATA'],
-    config['IAM_ROLE']['ARN'],
-    config['CLUSTER']['REGION']
+    config.get('S3', 'SONG_DATA'),
+    config.get('IAM_ROLE', 'ARN'),
+    config('DWH', 'DWH_REGION')
 )
 
 # FINAL TABLES
