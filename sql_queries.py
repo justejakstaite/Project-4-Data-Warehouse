@@ -61,7 +61,7 @@ songplay_table_create = ("""
      CREATE TABLE IF NOT EXISTS songplays
     (
         songplay_id    BIGINT IDENTITY(1, 1) PRIMARY KEY,
-        start_time     TIMESTAMP NOT NULL SORTKEY DISTKEY,
+        start_time     TIMESTAMP NOT NULL SORTKEY,
         user_id        TEXT NOT NULL DISTKEY,
         level          TEXT,
         song_id        TEXT,
